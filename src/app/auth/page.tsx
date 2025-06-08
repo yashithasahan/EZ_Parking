@@ -1,16 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Logo } from '@/components/shared/Logo';
-import { Lock, UserPlus, LogIn, Mail, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
-
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,90 +25,72 @@ export default function AuthPage() {
     router.push('/dashboard');
   };
 
-  const handleRegisterSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleRegisterAction = async () => {
     setIsLoading(true);
     // Mock API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     setIsLoading(false);
-    toast({ title: "Registration Successful", description: "Please log in to continue." });
-    // Optionally switch to login tab or prompt user
+    toast({ 
+      title: "Registration", 
+      description: "The registration process would be initiated here. This feature is currently under development." 
+    });
+    // Example: router.push('/register'); // If you have a separate registration page
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-      <Logo className="mb-8" />
-      <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login"><LogIn className="mr-2 h-4 w-4" />Login</TabsTrigger>
-          <TabsTrigger value="register"><UserPlus className="mr-2 h-4 w-4" />Register</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <Card className="shadow-xl">
-            <CardHeader>
-              <CardTitle className="font-headline">Welcome Back!</CardTitle>
-              <CardDescription>Enter your credentials to access your account.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleLoginSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="login-email" type="email" placeholder="you@example.com" required className="pl-10" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="login-password" type="password" placeholder="••••••••" required className="pl-10" />
-                  </div>
-                </div>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
-                  {isLoading ? 'Logging in...' : 'Login'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="register">
-          <Card className="shadow-xl">
-            <CardHeader>
-              <CardTitle className="font-headline">Create an Account</CardTitle>
-              <CardDescription>Fill in the details below to join ParkEase.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleRegisterSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="register-name">Full Name</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="register-name" type="text" placeholder="John Doe" required className="pl-10" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="register-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="register-email" type="email" placeholder="you@example.com" required className="pl-10" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="register-password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="register-password" type="password" placeholder="••••••••" required className="pl-10" />
-                  </div>
-                </div>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
-                  {isLoading ? 'Registering...' : 'Register'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <h1 className="text-4xl font-bold font-headline mb-8 text-primary text-center">
+        Welcome to EZPark
+      </h1>
+      <Card className="w-full max-w-4xl lg:max-w-5xl flex flex-col md:flex-row shadow-2xl rounded-xl overflow-hidden">
+        {/* Left Pane: Image */}
+        <div className="w-full md:w-1/2 hidden md:flex items-center justify-center bg-slate-100 p-8">
+          <Image
+            src="https://placehold.co/600x800.png"
+            alt="Automated parking illustration"
+            data-ai-hint="toll booth parking lot"
+            width={500}
+            height={700}
+            className="object-contain h-full max-h-[500px] w-auto rounded-lg"
+          />
+        </div>
+
+        {/* Right Pane: Form */}
+        <div className="w-full md:w-1/2 p-8 sm:p-12 flex flex-col justify-center bg-card">
+          <h2 className="text-2xl font-semibold font-headline mb-2 text-center">Login</h2>
+          <p className="text-muted-foreground mb-8 text-center">Access your EZPark account.</p>
+          
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input id="login-email" type="email" placeholder="you@example.com" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="login-password">Password</Label>
+              <Input id="login-password" type="password" placeholder="••••••••" required />
+            </div>
+            <div className="text-right mt-2 mb-4">
+              <Link href="#" className="text-sm text-primary hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 py-3 text-base" disabled={isLoading}>
+                {isLoading ? 'Logging in...' : 'Login'}
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="flex-1 py-3 text-base border-primary text-primary hover:bg-primary/5 hover:text-primary" 
+                onClick={handleRegisterAction}
+                disabled={isLoading}
+              >
+                Register
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Card>
     </div>
   );
 }

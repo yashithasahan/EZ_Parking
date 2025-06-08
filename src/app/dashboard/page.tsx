@@ -84,7 +84,7 @@ export default function DashboardPage() {
         </section>
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-        © {new Date().getFullYear()} ParkEase. All rights reserved.
+        © {new Date().getFullYear()} EZPark. All rights reserved.
       </footer>
     </div>
   );

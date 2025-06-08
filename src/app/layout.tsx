@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'ParkEase - Car Parking Management',
-  description: 'Efficiently manage and book parking slots with ParkEase.',
+  title: 'EZPark - Car Parking Management',
+  description: 'Efficiently manage and book parking slots with EZPark.',
 };
 
 export default function RootLayout({
