@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, Car, Clock, Hash, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface BookingItemProps {
   booking: Booking;
