@@ -6,29 +6,27 @@ import { ParkingLot } from './components/ParkingLot';
 import { BookingItem } from './components/BookingItem';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { mockParkingSlots as importedMockParkingSlots, mockBookings as importedMockBookings } from '@/lib/placeholder-data';
+import { mockParkingSlots as importedMockParkingSlots } from '@/lib/placeholder-data';
 import { Car, CheckCircle2, ListChecks, Ticket } from 'lucide-react';
 import type { ParkingSlot, Booking } from '@/types';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useBookingContext } from '@/context/BookingContext';
 
 export default function DashboardPage() {
   const router = useRouter();
+  const { bookings: contextBookings } = useBookingContext();
 
-  // State for values that will be updated client-side post-hydration
   const [totalSlots, setTotalSlots] = useState<number | string>('...');
   const [availableSlots, setAvailableSlots] = useState<number | string>('...');
   const [occupiedSlots, setOccupiedSlots] = useState<number | string>('...');
   
   const [currentParkingSlots, setCurrentParkingSlots] = useState<ParkingSlot[]>([]);
-  const [activeBookings, setActiveBookings] = useState<Booking[]>([]);
-  const [currentYear, setCurrentYear] = useState<number>(() => new Date().getFullYear()); // Initial value
+  const [currentYear, setCurrentYear] = useState<number>(() => new Date().getFullYear());
 
-  // Flag to ensure client-side only rendering for certain parts after mount
   const [isClientMounted, setIsClientMounted] = useState(false);
 
   useEffect(() => {
-    // Calculate and set stats from client-side evaluation of imported mock data
     const calculatedTotalSlots = importedMockParkingSlots.length;
     const calculatedAvailableSlots = importedMockParkingSlots.filter(slot => slot.status === 'available').length;
     const calculatedOccupiedSlots = importedMockParkingSlots.filter(slot => slot.status === 'occupied' || slot.status === 'reserved').length;
@@ -37,16 +35,15 @@ export default function DashboardPage() {
     setAvailableSlots(calculatedAvailableSlots);
     setOccupiedSlots(calculatedOccupiedSlots);
 
-    // Set data for lists from client-side evaluation of imported mock data
     setCurrentParkingSlots(importedMockParkingSlots);
-    const filteredActiveBookings = importedMockBookings.filter(booking => booking.status === 'active');
-    setActiveBookings(filteredActiveBookings);
-    
-    // Update year (for full compliance with hydration guidelines)
     setCurrentYear(new Date().getFullYear());
+    setIsClientMounted(true);
+  }, []);
 
-    setIsClientMounted(true); // Signal that client-specific logic has run
-  }, []); // Empty dependency array: run once on mount
+  const activeBookings = useMemo(() => {
+    if (!isClientMounted || !contextBookings) return [];
+    return contextBookings.filter(booking => booking.status === 'active');
+  }, [isClientMounted, contextBookings]);
 
   const handleBookNow = () => {
     router.push('/dashboard/book');

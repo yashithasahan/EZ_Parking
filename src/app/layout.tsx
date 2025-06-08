@@ -1,6 +1,8 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { BookingProvider } from '@/context/BookingContext';
 
 export const metadata: Metadata = {
   title: 'EZPark - Car Parking Management',
@@ -21,7 +23,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
-        {children}
+        <BookingProvider>
+          {children}
+        </BookingProvider>
         <Toaster />
       </body>
     </html>

@@ -6,17 +6,17 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, CheckCircle, ParkingSquare, CalendarDays, Clock, Car, Tag } from 'lucide-react';
+import { ArrowLeft, CheckCircle, ParkingSquare, CalendarDays, Clock, Car as CarIcon, Tag } from 'lucide-react'; // Renamed Car to CarIcon to avoid conflict
 import { format, parse, differenceInMinutes, setHours, setMinutes } from 'date-fns';
-// Import mockBookings if you intend to "add" to it, though it won't persist client-side easily
-// import { mockBookings } from '@/lib/placeholder-data';
-// import type { Booking } from '@/types';
+import { useBookingContext } from '@/context/BookingContext';
+import type { Booking } from '@/types';
 
 
 function PaymentPageForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const { addBooking } = useBookingContext();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -67,22 +67,20 @@ function PaymentPageForm() {
 
   const handleConfirmBooking = async () => {
     setIsLoading(true);
-    // Simulate API call for booking
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // This is where you would typically call a backend service to create the booking.
-    // For this demo, we'll just show a success toast.
-    // If you were to modify mockBookings, it would be like:
-    // const newBooking: Booking = {
-    //   id: `booking-${Date.now()}`,
-    //   slotId: slotId!,
-    //   userId: 'user-mock', // Mock user ID
-    //   vehiclePlate: plate!,
-    //   startTime: bookingDetails!.startDateTime,
-    //   endTime: bookingDetails!.endDateTime,
-    //   status: 'active',
-    // };
-    // mockBookings.push(newBooking); // Note: This won't reflect globally without proper state management
+    if (slotId && plate && bookingDetails) {
+      const newBooking: Booking = {
+        id: `booking-${Date.now()}`,
+        slotId: slotId,
+        userId: 'user-mock', // Mock user ID
+        vehiclePlate: plate,
+        startTime: bookingDetails.startDateTime,
+        endTime: bookingDetails.endDateTime,
+        status: 'active',
+      };
+      addBooking(newBooking);
+    }
 
     setIsLoading(false);
     toast({
@@ -91,11 +89,10 @@ function PaymentPageForm() {
       variant: 'default',
       duration: 5000,
     });
-    router.replace('/dashboard'); // Use replace to prevent going back to payment page
+    router.replace('/dashboard');
   };
 
   const handleBack = () => {
-    // Retain all query params except for maybe payment specific ones if any were added
     router.push(`/dashboard/book/vehicle-info?${searchParams.toString()}`);
   };
 
@@ -114,7 +111,7 @@ function PaymentPageForm() {
           <h3 className="font-semibold text-lg mb-2">Booking Summary</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <p className="flex items-center"><ParkingSquare className="mr-2 h-4 w-4 text-primary" /> Slot: <span className="font-medium ml-1">{slotId.split('-')[1]}</span></p>
-            <p className="flex items-center"><Car className="mr-2 h-4 w-4 text-primary" /> Vehicle: <span className="font-medium ml-1">{plate} ({type})</span></p>
+            <p className="flex items-center"><CarIcon className="mr-2 h-4 w-4 text-primary" /> Vehicle: <span className="font-medium ml-1">{plate} ({type})</span></p>
             <p className="flex items-center"><CalendarDays className="mr-2 h-4 w-4 text-primary" /> Date: <span className="font-medium ml-1">{bookingDetails.formattedDate}</span></p>
             <p className="flex items-center"><Clock className="mr-2 h-4 w-4 text-primary" /> Time: <span className="font-medium ml-1">{bookingDetails.startTime} - {bookingDetails.endTime}</span></p>
           </div>
@@ -125,7 +122,6 @@ function PaymentPageForm() {
           <h3 className="font-semibold text-lg mb-2">Payment Details</h3>
           <p className="text-sm text-muted-foreground">Total Amount: <span className="text-xl font-bold text-primary">${bookingDetails.price}</span></p>
           <p className="text-xs text-muted-foreground mt-2">Payment processing is mocked for this demonstration. No actual charges will be made.</p>
-          {/* Placeholder for payment form elements if needed in future */}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row gap-3 pt-4">
@@ -134,7 +130,7 @@ function PaymentPageForm() {
         </Button>
         <Button 
           onClick={handleConfirmBooking} 
-          disabled={isLoading}
+          disabled={isLoading || !bookingDetails}
           className="w-full sm:flex-1 text-base py-3 bg-green-600 hover:bg-green-700 text-white"
         >
           {isLoading ? 'Processing...' : (
@@ -156,4 +152,3 @@ export default function PaymentPage() {
     </Suspense>
   );
 }
-
