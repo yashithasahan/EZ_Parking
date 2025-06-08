@@ -6,19 +6,47 @@ import { ParkingLot } from './components/ParkingLot';
 import { BookingItem } from './components/BookingItem';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { mockParkingSlots, mockBookings } from '@/lib/placeholder-data';
+import { mockParkingSlots as importedMockParkingSlots, mockBookings as importedMockBookings } from '@/lib/placeholder-data';
 import { Car, CheckCircle2, ListChecks, Ticket } from 'lucide-react';
-import type { ParkingSlot } from '@/types';
+import type { ParkingSlot, Booking } from '@/types';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function DashboardPage() {
   const router = useRouter();
 
-  const totalSlots = mockParkingSlots.length;
-  const availableSlots = mockParkingSlots.filter(slot => slot.status === 'available').length;
-  const occupiedSlots = mockParkingSlots.filter(slot => slot.status === 'occupied' || slot.status === 'reserved').length;
+  // State for values that will be updated client-side post-hydration
+  const [totalSlots, setTotalSlots] = useState<number | string>('...');
+  const [availableSlots, setAvailableSlots] = useState<number | string>('...');
+  const [occupiedSlots, setOccupiedSlots] = useState<number | string>('...');
   
-  const activeBookings = mockBookings.filter(booking => booking.status === 'active');
+  const [currentParkingSlots, setCurrentParkingSlots] = useState<ParkingSlot[]>([]);
+  const [activeBookings, setActiveBookings] = useState<Booking[]>([]);
+  const [currentYear, setCurrentYear] = useState<number>(() => new Date().getFullYear()); // Initial value
+
+  // Flag to ensure client-side only rendering for certain parts after mount
+  const [isClientMounted, setIsClientMounted] = useState(false);
+
+  useEffect(() => {
+    // Calculate and set stats from client-side evaluation of imported mock data
+    const calculatedTotalSlots = importedMockParkingSlots.length;
+    const calculatedAvailableSlots = importedMockParkingSlots.filter(slot => slot.status === 'available').length;
+    const calculatedOccupiedSlots = importedMockParkingSlots.filter(slot => slot.status === 'occupied' || slot.status === 'reserved').length;
+    
+    setTotalSlots(calculatedTotalSlots);
+    setAvailableSlots(calculatedAvailableSlots);
+    setOccupiedSlots(calculatedOccupiedSlots);
+
+    // Set data for lists from client-side evaluation of imported mock data
+    setCurrentParkingSlots(importedMockParkingSlots);
+    const filteredActiveBookings = importedMockBookings.filter(booking => booking.status === 'active');
+    setActiveBookings(filteredActiveBookings);
+    
+    // Update year (for full compliance with hydration guidelines)
+    setCurrentYear(new Date().getFullYear());
+
+    setIsClientMounted(true); // Signal that client-specific logic has run
+  }, []); // Empty dependency array: run once on mount
 
   const handleBookNow = () => {
     router.push('/dashboard/book');
@@ -42,7 +70,9 @@ export default function DashboardPage() {
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 items-start">
           <div className="lg:col-span-2">
             <h2 className="text-2xl font-semibold font-headline mb-4">Parking Lot Layout</h2>
-            <ParkingLot slots={mockParkingSlots} />
+            {isClientMounted ? <ParkingLot slots={currentParkingSlots} /> : 
+              <Card><CardContent className="pt-6 flex items-center justify-center min-h-[200px]"><p>Loading parking lot...</p></CardContent></Card>
+            }
           </div>
           <div className="lg:sticky lg:top-24"> {/* Sticky for larger screens */}
             <h2 className="text-2xl font-semibold font-headline mb-4">Reserve Your Spot</h2>
@@ -65,23 +95,25 @@ export default function DashboardPage() {
         {/* Current Bookings Management Section */}
         <section>
           <h2 className="text-2xl font-semibold font-headline mb-4">Your Active Bookings</h2>
-          {activeBookings.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {activeBookings.map(booking => (
-                <BookingItem key={booking.id} booking={booking} />
-              ))}
-            </div>
-          ) : (
-            <Card className="shadow-md">
-              <CardContent className="pt-6">
-                <p className="text-center text-muted-foreground">You have no active bookings at the moment.</p>
-              </CardContent>
-            </Card>
-          )}
+          {isClientMounted ? (
+            activeBookings.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                {activeBookings.map(booking => (
+                  <BookingItem key={booking.id} booking={booking} />
+                ))}
+              </div>
+            ) : (
+              <Card className="shadow-md">
+                <CardContent className="pt-6">
+                  <p className="text-center text-muted-foreground">You have no active bookings at the moment.</p>
+                </CardContent>
+              </Card>
+            )
+          ) : <Card><CardContent className="pt-6 flex items-center justify-center min-h-[100px]"><p>Loading bookings...</p></CardContent></Card>}
         </section>
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-        © {new Date().getFullYear()} EZPark. All rights reserved.
+        © {currentYear} EZPark. All rights reserved.
       </footer>
     </div>
   );
