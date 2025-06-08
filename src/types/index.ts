@@ -1,3 +1,4 @@
+
 export type ParkingSlotStatus = 'available' | 'occupied' | 'reserved' | 'maintenance';
 
 export interface ParkingSlot {
@@ -7,6 +8,8 @@ export interface ParkingSlot {
   vehicleId?: string; // If occupied or reserved
 }
 
+export type BookingStatus = 'active' | 'completed' | 'cancelled';
+
 export interface Booking {
   id: string;
   slotId: string;
@@ -14,5 +17,9 @@ export interface Booking {
   vehiclePlate: string;
   startTime: Date;
   endTime: Date;
-  status: 'active' | 'completed' | 'cancelled';
+  status: BookingStatus;
 }
+
+export type VehicleType = 'Car' | 'Motorcycle' | 'Van' | 'SUV' | 'Truck';
+
+export const vehicleTypes: VehicleType[] = ['Car', 'Motorcycle', 'Van', 'SUV', 'Truck'];

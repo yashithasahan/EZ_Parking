@@ -1,3 +1,4 @@
+
 'use client';
 import { Header } from '@/components/shared/Header';
 import { StatCard } from './components/StatCard';
@@ -8,10 +9,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { mockParkingSlots, mockBookings } from '@/lib/placeholder-data';
 import { Car, CheckCircle2, ListChecks, Ticket } from 'lucide-react';
 import type { ParkingSlot } from '@/types';
-import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
-  const { toast } = useToast();
+  const router = useRouter();
 
   const totalSlots = mockParkingSlots.length;
   const availableSlots = mockParkingSlots.filter(slot => slot.status === 'available').length;
@@ -20,11 +21,7 @@ export default function DashboardPage() {
   const activeBookings = mockBookings.filter(booking => booking.status === 'active');
 
   const handleBookNow = () => {
-    toast({
-      title: "Booking Feature",
-      description: "The booking functionality will be implemented soon!",
-      variant: "default",
-    });
+    router.push('/dashboard/book');
   };
 
   return (
