@@ -3,9 +3,8 @@ export type ParkingSlotStatus = 'available' | 'occupied' | 'reserved' | 'mainten
 
 export interface ParkingSlot {
   id: string;
-  status: ParkingSlotStatus;
-  location: string; // e.g., "A1", "B5"
-  vehicleId?: string; // If occupied or reserved
+  is_occupied: boolean;
+  is_reserved: boolean; // e.g., "A1", "B5"
 }
 
 export type BookingStatus = 'active' | 'completed' | 'cancelled';

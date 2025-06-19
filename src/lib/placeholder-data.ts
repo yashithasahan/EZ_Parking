@@ -1,17 +1,17 @@
 import type { ParkingSlot, Booking, ParkingSlotStatus } from '@/types';
 
-export const mockParkingSlots: ParkingSlot[] = Array.from({ length: 20 }, (_, i) => {
-  const statuses: ParkingSlotStatus[] = ['available', 'occupied', 'reserved', 'maintenance'];
-  const status = statuses[Math.floor(Math.random() * statuses.length)];
-  const section = String.fromCharCode(65 + Math.floor(i / 5)); // A, B, C, D
-  const number = (i % 5) + 1;
-  return {
-    id: `slot-${section}${number}`,
-    location: `${section}${number}`,
-    status: status,
-    vehicleId: status === 'occupied' || status === 'reserved' ? `VEH-${Math.floor(Math.random() * 1000)}` : undefined,
-  };
-});
+// export const mockParkingSlots: ParkingSlot[] = Array.from({ length: 20 }, (_, i) => {
+//   const statuses: ParkingSlotStatus[] = ['available', 'occupied', 'reserved', 'maintenance'];
+//   const status = statuses[Math.floor(Math.random() * statuses.length)];
+//   const section = String.fromCharCode(65 + Math.floor(i / 5)); // A, B, C, D
+//   const number = (i % 5) + 1;
+//   return {
+//     id: `slot-${section}${number}`,
+//     location: `${section}${number}`,
+//     status: status,
+//     vehicleId: status === 'occupied' || status === 'reserved' ? `VEH-${Math.floor(Math.random() * 1000)}` : undefined,
+//   };
+// });
 
 export const mockBookings: Booking[] = [
   {

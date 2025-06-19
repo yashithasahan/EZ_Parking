@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import carParkImage from "@public/images/car_park.jpg";
-import { register } from "@/service/auth_service";
+import { login, register } from "@/service/auth_service";
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,25 +21,25 @@ export default function AuthPage() {
 
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsLoading(true);
-    // Mock API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
-    toast({
-      title: "",
-      description: "",
-    });
-    // router.push("/dashboard");
+    const data = await login(userName, password);
+    console.log(data);
+    // If there's no error, check if you have a user and a session
+    if (data.user && data.session) {
+      console.log("Login successful:", data);
+      // This is the point where you should redirect.
+      // Make sure you have an instance of the router.
+      router.push("/dashboard");
+    } else {
+      console.log("Login unsuccessful, no user data returned.");
+    }
   };
 
   const handleRegisterAction = async () => {
     setIsLoading(true);
-    // Mock API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
-    console.log(userName);
-    const data = register(userName, password);
+
+    const data = await register(userName, password);
     console.log(data);
+    setIsLoading(false);
     // toast({
     //   title: "name" + { userName.toString() },
     //   description:
