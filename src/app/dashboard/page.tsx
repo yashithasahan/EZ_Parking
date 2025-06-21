@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo, use } from "react";
 import { useBookingContext } from "@/context/BookingContext";
 import { getAllSlots } from "@/service/dashboard_service";
+import { MyBookingsSection } from "./components/MyBookingsSection";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -136,34 +137,7 @@ export default function DashboardPage() {
         </section>
 
         {/* Current Bookings Management Section */}
-        <section>
-          <h2 className="text-2xl font-semibold font-headline mb-4">
-            Your Active Bookings
-          </h2>
-          {isClientMounted ? (
-            activeBookings.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                {activeBookings.map((booking) => (
-                  <BookingItem key={booking.id} booking={booking} />
-                ))}
-              </div>
-            ) : (
-              <Card className="shadow-md">
-                <CardContent className="pt-6">
-                  <p className="text-center text-muted-foreground">
-                    You have no active bookings at the moment.
-                  </p>
-                </CardContent>
-              </Card>
-            )
-          ) : (
-            <Card>
-              <CardContent className="pt-6 flex items-center justify-center min-h-[100px]">
-                <p>Loading bookings...</p>
-              </CardContent>
-            </Card>
-          )}
-        </section>
+        <MyBookingsSection />
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
         © {currentYear} EZPark. All rights reserved.
