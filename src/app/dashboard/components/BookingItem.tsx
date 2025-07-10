@@ -259,6 +259,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useToast } from "@/hooks/use-toast";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { supabase } from "@/lib/supabase";
 
 interface BookingItemProps {
   booking: Booking;
@@ -277,22 +278,50 @@ export function BookingItem({ booking }: BookingItemProps) {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const ticketRef = useRef<HTMLDivElement>(null);
 
-  const handleCancellationRequest = async () => {
+  // const handleCancellationRequest = async () => {
+  //   toast({
+  //     title: "Processing...",
+  //     description: "Submitting cancellation request.",
+  //   });
+  //   try {
+  //     // TODO: Implement the actual API call
+  //     console.log("Cancellation requested for booking:", booking.id);
+  //     toast({
+  //       title: "Success",
+  //       description: "Your cancellation request has been submitted.",
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to submit cancellation request.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+  const handleCancellationRequest = async (bookingId: string) => {
     toast({
       title: "Processing...",
       description: "Submitting cancellation request.",
     });
+
     try {
-      // TODO: Implement the actual API call
-      console.log("Cancellation requested for booking:", booking.id);
+      const { error } = await supabase
+        .from("booking")
+        .update({ status: "cancelled" })
+        .eq("id", bookingId);
+
+      if (error) {
+        throw error;
+      }
+
       toast({
         title: "Success",
         description: "Your cancellation request has been submitted.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to submit cancellation request.",
+        description: error.message || "Failed to cancel booking.",
         variant: "destructive",
       });
     }
@@ -490,7 +519,9 @@ export function BookingItem({ booking }: BookingItemProps) {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Back</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleCancellationRequest}>
+                      <AlertDialogAction
+                        onClick={() => handleCancellationRequest(booking.id)}
+                      >
                         Yes, Request Cancellation
                       </AlertDialogAction>
                     </AlertDialogFooter>
