@@ -25,3 +25,27 @@ export const register = async (email: string, password: string) => {
 console.log(data);
   return data;
 };
+
+export const sendPasswordResetEmail = async (email: string) => {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.href,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
+export const updateUserPassword = async (password: string) => {
+  const { data, error } = await supabase.auth.updateUser({
+    password: password,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
